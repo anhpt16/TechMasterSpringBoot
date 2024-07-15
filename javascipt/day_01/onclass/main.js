@@ -10,4 +10,21 @@ console.log(Object);
 
 let name = "Anh";
 let hisAge = 22;
+// Template String
 console.log(`Xin chào ${name}, tuổi ${hisAge}`);
+console.log("0" + 1);
+
+// Rugular Function
+function sum(a, b) {
+    return a + b;
+}
+// Function Expression
+let sum1 = function(a, b) {
+    return a + b;
+}
+// Arrow Function (ES6)
+let sum2 = (a, b) => {
+    return a + b;
+}
+
+console.log(sum(9, 9));
