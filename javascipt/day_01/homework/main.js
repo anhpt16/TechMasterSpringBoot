@@ -36,6 +36,10 @@ console.log(getCountry("bR"));
 console.log(getCountry("CA"));
 // Bài 4
 var wrapString = (string) => {
+    if(string.length < 11) {
+        return string;
+    }
     return string.slice(0, 10) + "...";
 }
+console.log(wrapString("acvsderkfm"));
 console.log(wrapString("xinchaocacbandenvoiTechmaster"));
