@@ -23,17 +23,14 @@ function removeHighlight() {
 }
 
 btnPost.addEventListener('click', () => {
-    removeHighlight();
     loadPost();
 })
 
 btnPhoto.addEventListener('click', () => {
-    removeHighlight();
     loadPhoto();
 })
 
 btnAlbum.addEventListener('click', () => {
-    removeHighlight();
     loadAlbum();
 })
 
@@ -46,6 +43,7 @@ async function loadPost() {
             <li>${post.title}</li>
         `
     })
+    removeHighlight();
     h1El.innerHTML = `Type: post`;
     btnPost.classList.add("highlight");
     ulEl.innerHTML = html;
@@ -60,6 +58,7 @@ async function loadPhoto() {
             <li>${photo.title}</li>
         `
     })
+    removeHighlight();
     h1El.innerHTML = `Type: photos`;
     btnPhoto.classList.add("highlight");
     ulEl.innerHTML = html;
@@ -74,6 +73,7 @@ async function loadAlbum() {
             <li>${album.title}</li>
         `
     })
+    removeHighlight();
     h1El.innerHTML = `Type: albums`;
     btnAlbum.classList.add("highlight");
     ulEl.innerHTML = html;
