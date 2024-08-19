@@ -5,18 +5,13 @@
         xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
         lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>List book</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+  <meta charset="UTF-8">
+  <title>List book</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<h1>List Book</h1>
 <div class="container">
   <h1>Danh sách sách</h1>
-  <form action="/books/searchByTitle">
-    <input type="text" placeholder="Tìm kiếm ..." name="title">
-    <button type="submit">Tìm kiếm</button>
-  </form>
   <br>
   <table>
     <thead>
@@ -29,7 +24,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="book : ${books}" th:styleappend="${book.id % 2 == 0 ? 'background-color: lightblue;' : ''}">
+    <tr th:each="book : ${books.getContent()}" th:styleappend="${book.id % 2 == 0 ? 'background-color: lightblue;' : ''}">
       <td th:text="${book.id}"></td>
       <td th:text="${book.title}"></td>
       <td th:text="${book.author}"></td>
@@ -46,6 +41,16 @@
     </tr>
     </tbody>
   </table>
+  <br>
+  <button th:if="${books.getCurrentPage() != 1}">
+    <a th:href="|/books?page=${books.getCurrentPage() - 1}|">Prev</a>
+  </button>
+  <button th:each="number : ${#numbers.sequence(1, books.totalPages())}">
+    <a href="" th:text="${number}"></a>
+  </button>
+  <button th:if="${books.getCurrentPage() != books.totalPages()}">
+    <a th:href="|/books?page=${books.getCurrentPage() + 1}|">Next</a>
+  </button>
 </div>
 <script th:src="@{/js/main.js}"></script>
 </body>

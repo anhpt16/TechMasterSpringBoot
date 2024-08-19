@@ -2,6 +2,9 @@ package com.example.webdemo.controller;
 
 
 import com.example.webdemo.model.Book;
+import com.example.webdemo.model.PageResponse;
+import com.example.webdemo.model.PageResponseImpl;
+import com.github.javafaker.Faker;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,15 +28,39 @@ import java.util.stream.Collectors;
 
 @Controller
 public class BookController {
-    private List<Book> books = new ArrayList<>(List.of(
-        new Book(2, "Truyện ma", "Ngạn", 1999),
-        new Book(3, "Truyện Doremon", "Ạuki", 1988),
-        new Book(4, "Truyện Cười", "Ba con lợn", 2000),
-        new Book(5, "Truyện Ngụ Ngôn", "Hoàng", 2001),
-        new Book(6, "Truyện Tấm Cám", "Nhiều tác giả", 1990),
-        new Book(7, "Truyện Kiều", "Nguyễn Du", 1888),
-        new Book(8, "Truyện Lịch Sử", "Lon", 2000)
-    ));
+    private List<Book> books = new ArrayList<>();
+    public BookController() {
+        Faker faker = new Faker();
+        for (int i = 0; i < 30; i++) {
+            Book book = Book.builder()
+                .id(i)
+                .title(faker.book().title())
+                .author(faker.book().author())
+                .year(faker.number().numberBetween(1990, 2020))
+                .build();
+            books.add(book);
+        }
+    }
+
+    // Phân trang
+    // currentPage
+    // pageSize
+    // totalElement
+    // totalPage
+    @GetMapping("/books")
+    public String initBook(
+        @RequestParam(required = false, defaultValue = "1") int page,
+        @RequestParam(required = false, defaultValue = "10") int size,
+        Model model
+    ) {
+        PageResponse<Book> pageResponse = PageResponseImpl.<Book>builder()
+            .currentPage(page)
+            .pageSize(size)
+            .data(books)
+            .build();
+        model.addAttribute("books", pageResponse);
+        return "booklist";
+    }
 
 
     @GetMapping("/home")
@@ -59,11 +86,11 @@ public class BookController {
 //    }
 
     //Sử dụng response entity
-    @GetMapping("/books")
-    @ResponseBody
-    public ResponseEntity<List<Book>> getAllBook() {
-        return new ResponseEntity<>(books, HttpStatus.CREATED);
-    }
+//    @GetMapping("/books")
+//    @ResponseBody
+//    public ResponseEntity<List<Book>> getAllBook() {
+//        return new ResponseEntity<>(books, HttpStatus.CREATED);
+//    }
 
     // Lấy sách theo id
 //    @GetMapping("/books/{id}")
@@ -78,17 +105,41 @@ public class BookController {
 //    }
 
     // ResponseEntity
+//    @GetMapping("/books/{id}")
+//    @ResponseBody
+//    public ResponseEntity<Book> bookById(
+//        @PathVariable int id
+//    ) {
+//        for (Book b : books) {
+//            if (b.getId() == id){
+//                return new ResponseEntity<>(b, HttpStatus.CREATED);
+//            }
+//        }
+//        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//    }
+
     @GetMapping("/books/{id}")
-    @ResponseBody
-    public ResponseEntity<Book> bookById(
-        @PathVariable int id
+    public String getBookById(
+        @PathVariable int id,
+        Model model
     ) {
-        for (Book b : books) {
-            if (b.getId() == id){
-                return new ResponseEntity<>(b, HttpStatus.CREATED);
-            }
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Book bookById = books.stream()
+            .filter(book -> book.getId() == id)
+            .findFirst()
+            .orElse(null);
+        List<Book> bookrelated = books.stream()
+            .filter(book ->
+                (
+                    (book.getId() != bookById.getId())
+                    && (book.getAuthor().equals(bookById.getAuthor()))
+                )
+            )
+            .sorted(((o1, o2) -> Integer.compare(o2.getYear(), o1.getYear())))
+            .limit(4)
+            .collect(Collectors.toList());
+        model.addAttribute("book", bookById);
+        model.addAttribute("bookrelated", bookrelated);
+        return "bookdetail";
     }
 
     // Sắp xếp theo năm giảm dần
@@ -104,18 +155,31 @@ public class BookController {
     }
 
     // Tìm kiếm sách theo tên
+//    @GetMapping("/books/searchByTitle")
+//    public ResponseEntity<List<Book>> searchByTitle(
+//        @RequestParam String keyword
+//    ) {
+//        List<Book> booksSearched = books.stream()
+//            .filter(book -> book.getTitle().contains(keyword))
+//            .collect(Collectors.toList());
+//        if (booksSearched == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//        return new ResponseEntity<>(booksSearched, HttpStatus.CREATED);
+//    }
+
     @GetMapping("/books/searchByTitle")
-    public ResponseEntity<List<Book>> searchByTitle(
-        @RequestParam String keyword
+    public String searchByTitle(
+        @RequestParam String title,
+        Model model
     ) {
         List<Book> booksSearched = books.stream()
-            .filter(book -> book.getTitle().contains(keyword))
+            .filter(book -> book.getTitle().contains(title))
             .collect(Collectors.toList());
-        if (booksSearched == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(booksSearched, HttpStatus.CREATED);
+        model.addAttribute("books", booksSearched);
+        return "listbook";
     }
+
     // Tìm kiếm sách xuất bản trong khoảng thời gian
     @GetMapping("/books/between")
     public ResponseEntity<List<Book>> getBetween(

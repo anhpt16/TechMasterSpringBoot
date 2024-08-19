@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>List book</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<th:block th:if="${book != null}">
+  <h1>[[${book.title}]]</h1>
+  <div th:text="${book.id}"></div>
+  <div th:text="${book.title}"></div>
+  <div th:text="${book.author}"></div>
+  <div th:text="${book.year}"></div>
+</th:block>
+<th:block th:unless="${book != null}">
+  <div>Not Found</div>
+</th:block>
+<p>Sách liên quan</p>
+<div class="book-related-container" th:if="${(bookrelated != null && bookrelated.size() > 0)}">
+  <div class="book-item" th:each="book : ${bookrelated}">
+    <p th:text="${bookrelated.title}"></p>
+    <ul>
+      <li th:text="${bookrelated.id}"></li>
+      <li th:text="${bookrelated.author}"></li>
+      <li th:text="${bookrelated.year}"></li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

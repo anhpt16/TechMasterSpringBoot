@@ -55,3 +55,17 @@ td:first-child {
 .btn-edit:hover, .btn-delete:hover {
     opacity: 0.8;
 }
+
+.book-related-container {
+    display: flex;
+    flex-flow: row;
+    gap: 20px;
+}
+.book-item {
+    display: flex;
+    flex-flow: column;
+}
+.book-item p {
+    font-size: 20px;
+    color: #4CAF50;
+}
