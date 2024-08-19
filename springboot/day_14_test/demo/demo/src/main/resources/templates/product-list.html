@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List book</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<h1>DANH SÁCH SẢN PHẨM</h1>
+<div class="menu-container">
+    <form class="container" action="/products/by-name">
+        <label>Tìm kiếm: </label>
+        <input type="text" placeholder="Tìm kiếm ..." name="keyword">
+        <button type="submit">Tìm kiếm</button>
+    </form>
+</div>
+<hr>
+<div class="container my-4">
+    <div class="row">
+        <div class="col-lg-3 mb-4" th:each="product : ${products.getContent()}">
+            <div class="card">
+                <a th:href="|/products/${product.id}|" class="card-link">
+                    <img th:src="${product.thumbnail}" alt="Product Image" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.name}">Product Title</h5>
+                        <p class="card-text d-flex justify-content-between">
+                            <span class="current-price" th:text="${product.price} + '&#8363;'">Current Price</span><br>
+                            <span class="old-price" th:text="${product.priceDiscount} + '&#8363;' ">Old Price</span>
+                        </p>
+                        <div class="rating d-flex align-items-center">
+                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                            <p th:text="${product.rating}"></p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <!-- Previous Page Button -->
+    <button th:if="${products.getCurrentPage() != 1}">
+        <a th:href="|/?page=${products.getCurrentPage() - 1}|">Prev</a>
+    </button>
+
+    <!-- Page Numbers -->
+    <button th:each="number : ${#numbers.sequence(1, products.totalPages())}"
+            th:classappend="${number == products.getCurrentPage()} ? 'current-page' : ''">
+        <a th:href="|/?page=${number}|"
+           th:text="${number}"></a>
+    </button>
+
+    <!-- Next Page Button -->
+    <button th:if="${products.getCurrentPage() != products.totalPages()}">
+        <a th:href="|/?page=${products.getCurrentPage() + 1}|">Next</a>
+    </button>
+
+</div>
+<script th:src="@{/js/main.js}"></script>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
